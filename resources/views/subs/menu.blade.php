@@ -35,7 +35,7 @@
               </g>
             </svg>
           </span>
-          <span class="app-brand-text demo menu-text fw-bolder ms-2">SISFO v1.0</span>
+          <span class="app-brand-text demo menu-text fw-bolder ms-2">System RS v1.0</span>
         </a>
 
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
@@ -53,14 +53,14 @@
 
         <li class="menu-item @if(url()->current() == url('/hospitals')) active @endif">
           <a href="{{ url('/hospitals') }}" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-hospital"></i>
+
             <div data-i18n="Hospital">Hospital</div>
           </a>
         </li>
 
         <li class="menu-item @if(url()->current() == url('/patients')) active @endif">
           <a href="{{ url('/patients') }}" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-user"></i>
+
             <div data-i18n="Patient">Patient</div>
           </a>
         </li>

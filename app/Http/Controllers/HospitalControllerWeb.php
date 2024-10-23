@@ -40,11 +40,12 @@ class HospitalControllerWeb extends Controller
     }
 
 
+
     // Menampilkan detail rumah sakit
     public function show($id)
     {
         $hospital = Hospital::findOrFail($id);
-        return view('hospital.show', compact('hospital')); // Pastikan view 'hospital.show' tersedia
+        return response()->json(['data'=> $hospital  ]);
     }
 
     // Menampilkan form edit rumah sakit
@@ -60,13 +61,18 @@ class HospitalControllerWeb extends Controller
         // Validasi input
         $validator = Validator::make($request->all(), [
             'nama_rumah_sakit' => 'required|string|max:255',
-            'alamat' => 'required|string',
+            'alamat' => 'required|string|max:255',
             'email' => 'required|email|unique:hospitals,email,' . $id,
-            'telepon' => 'required|string|max:15',
+            'telepon' => 'required|string|max:20',
         ]);
 
+        // Jika validasi gagal, return error response dalam format JSON
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422); // 422 Unprocessable Entity
         }
 
         // Mengupdate data di database
@@ -79,11 +85,22 @@ class HospitalControllerWeb extends Controller
                 'telepon' => $request->telepon,
             ]);
 
-            return redirect()->route('hospitals.index')->with('success', 'Data rumah sakit berhasil diperbarui.');
+            // Jika berhasil, return success response dalam format JSON
+            return response()->json([
+                'success' => true,
+                'message' => 'Hospital updated successfully.'
+            ]);
+
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui data rumah sakit: ' . $e->getMessage());
+            // Menangani error dan mengembalikan response error
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update hospital.',
+                'error' => $e->getMessage()
+            ], 500); // 500 Internal Server Error
         }
     }
+
 
     public function destroy($id)
     {

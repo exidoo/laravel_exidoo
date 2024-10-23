@@ -95,7 +95,7 @@
                 <h5 class="modal-title" id="viewHospitalModalLabel">Detail Rumah Sakit</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" id="hospitalDetails">
                 <p><strong>Name:</strong> <span id="hospitalNameDetail"></span></p>
                 <p><strong>Address:</strong> <span id="hospitalAddressDetail"></span></p>
                 <p><strong>Email:</strong> <span id="hospitalEmailDetail"></span></p>
@@ -199,10 +199,10 @@ $(document).ready(function() {
             url: '/hospitals/' + hospitalId,
             method: 'GET',
             success: function(data) {
-                $('#hospitalNameDetail').text(data.nama_rumah_sakit);
-                $('#hospitalAddressDetail').text(data.alamat);
-                $('#hospitalEmailDetail').text(data.email);
-                $('#hospitalPhoneDetail').text(data.telepon);
+                $('#hospitalNameDetail').text(data.data.nama_rumah_sakit);
+                $('#hospitalAddressDetail').text(data.data.alamat);
+                $('#hospitalEmailDetail').text(data.data.email);
+                $('#hospitalPhoneDetail').text(data.data.telepon);
                 $('#viewHospitalModal').modal('show');
             },
             error: function(xhr) {
@@ -217,11 +217,11 @@ $(document).ready(function() {
             url: '/hospitals/' + hospitalId,
             method: 'GET',
             success: function(data) {
-                $('#hospitalIdEdit').val(data.id);
-                $('#hospitalNameEdit').val(data.nama_rumah_sakit);
-                $('#hospitalAddressEdit').val(data.alamat);
-                $('#hospitalEmailEdit').val(data.email);
-                $('#hospitalPhoneEdit').val(data.telepon);
+                $('#hospitalIdEdit').val(data.data.id);
+                $('#hospitalNameEdit').val(data.data.nama_rumah_sakit);
+                $('#hospitalAddressEdit').val(data.data.alamat);
+                $('#hospitalEmailEdit').val(data.data.email);
+                $('#hospitalPhoneEdit').val(data.data.telepon);
                 $('#editHospitalModal').modal('show');
             },
             error: function(xhr) {
