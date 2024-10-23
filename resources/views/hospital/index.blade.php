@@ -30,6 +30,9 @@
                             <td>{{ $hospital->telepon }}</td>
                             <td>
                                 <div class="d-flex">
+                                    <a class="dropdown-item view-hospital" href="javascript:void(0);" data-id="{{ $hospital->id }}">
+                                        <i class="bx bx-info-circle me-1 text-info"></i>
+                                    </a>
                                     <a class="dropdown-item edit-hospital" href="javascript:void(0);" data-id="{{ $hospital->id }}">
                                         <i class="bx bx-edit-alt me-1 text-primary"></i>
                                     </a>
@@ -51,7 +54,7 @@
 <div class="modal fade" id="addHospitalModal" tabindex="-1" aria-labelledby="addHospitalModalLabel" aria-hidden="true" >
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="addHospitalsForm">
+            <form id="addHospitalForm">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addHospitalModalLabel">Add New Hospital</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -83,8 +86,30 @@
     </div>
 </div>
 
+
+<!-- Modal untuk Menampilkan Detail Rumah Sakit -->
+<div class="modal fade" id="viewHospitalModal" tabindex="-1" aria-labelledby="viewHospitalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewHospitalModalLabel">Detail Rumah Sakit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Name:</strong> <span id="hospitalNameDetail"></span></p>
+                <p><strong>Address:</strong> <span id="hospitalAddressDetail"></span></p>
+                <p><strong>Email:</strong> <span id="hospitalEmailDetail"></span></p>
+                <p><strong>Phone:</strong> <span id="hospitalPhoneDetail"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Edit Modal -->
-<div class="modal fade" id="editHospitalModal" tabindex="-1" aria-labelledby="editHospitalModalLabel" aria-hidden="true" inert>
+<div class="modal fade" id="editHospitalModal" tabindex="-1" aria-labelledby="editHospitalModalLabel" aria-hidden="true" >
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="editHospitalForm">
@@ -132,140 +157,139 @@
 @endpush
 
 @push('scripts')
-    <script>
-        $(document).ready(function() {
-            $('#addHospitalForm').on('submit', function(e) {
-                e.preventDefault();
-                var formData = $(this).serialize();
-                $.ajax({
-                    url: '{{url('/hospitals')}}',
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    data: formData,
-                    success: function(response) {
-                        if (response.success) {
-                        $('#addHospitalsModal').modal('hide');
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Hospital added successfully.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                location.reload();
-                            }
-                        });
-                        } else {
-                            Swal.fire('Error!', 'Failed to add hospital.', 'error');
+<script>
+$(document).ready(function() {
+    $('#addHospitalForm').on('submit', function(e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+        $.ajax({
+            url: '{{ url('/hospitals') }}',
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    $('#addHospitalModal').modal('hide');
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();
                         }
-                    },
-                    error: function(xhr) {
-                        console.log('Error adding hospital:', xhr.responseText);
-                        Swal.fire('Error!', 'An error occurred while adding the hospital.', 'error');
-                    }
-                });
-            });
-
-            $('.dropdown-item.edit-hospital').on('click', function() {
-                var hospitalId = $(this).data('id');
-                $.ajax({
-                    url: `{{url('/hospitals/${hospitalId}')}}`,
-                    method: 'GET',
-                    success: function(data) {
-                        $('#hospitalIdEdit').val(data.id);
-                        $('#hospitalNameEdit').val(data.nama_rumah_sakit);
-                        $('#hospitalAddressEdit').val(data.alamat);
-                        $('#hospitalEmailEdit').val(data.email);
-                        $('#hospitalPhoneEdit').val(data.telepon);
-                        $('#editHospitalModal').modal('show');
-                    },
-                    error: function(xhr) {
-                        console.log('Error fetching hospital data:', xhr.responseText);
-                    }
-                });
-            });
-
-            $('#editHospitalForm').on('submit', function(e) {
-                e.preventDefault();
-                var hospitalId = $('#hospitalIdEdit').val();
-                var formData = $(this).serialize();
-                $.ajax({
-                    url: '/hospitals/' + hospitalId,
-                    method: 'POST',
-                        headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                    data: formData + '&_method=PUT',
-                    success: function(response) {
-                        if (response.success) {
-                            $('#editHospitalModal').modal('hide');
-                            Swal.fire({
-                                title: 'Success!',
-                                text: 'Hospital updated successfully.',
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    location.reload();
-                                }
-                            });
-                        } else {
-                            Swal.fire('Error!', 'Failed to update hospital.', 'error');
-                        }
-                    },
-                    error: function(xhr) {
-                        console.log('Error updating hospital:', xhr.responseText);
-                        Swal.fire('Error!', 'An error occurred while updating the hospital.', 'error');
-                    }
-                });
-            });
-
-            $('.dropdown-item.delete-hospital').on('click', function() {
-                var hospitalId = $(this).data('id');
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '/hospitals/' + hospitalId,
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                            data: {
-                            _method: 'DELETE'
-                                },
-                            success: function(response) {
-                                if (response.success) {
-                                    Swal.fire(
-                                        'Deleted!',
-                                        'Your hospital has been deleted.',
-                                        'success'
-                                    ).then((result) => {
-                                        if (result.isConfirmed) {
-                                            location.reload();
-                                        }
-                                    });
-                                } else {
-                                    Swal.fire('Error!', 'Failed to delete hospital.', 'error');
-                                }
-                            },
-                            error: function(xhr) {
-                                console.log('Error deleting hospital:', xhr.responseText);
-                                Swal.fire('Error!', 'An error occurred while deleting the hospital.', 'error');
-                            }
-                        });
-                    }
-                });
-            });
+                    });
+                } else {
+                    Swal.fire('Error!', response.message, 'error');
+                }
+            },
+            error: function(xhr) {
+                console.log('Error adding hospital:', xhr.responseText);
+                Swal.fire('Error!', 'An error occurred while adding the hospital: ' + xhr.responseText, 'error');
+            }
         });
-    </script>
+    });
+
+    $('.dropdown-item.view-hospital').on('click', function() {
+        var hospitalId = $(this).data('id');
+        $.ajax({
+            url: '/hospitals/' + hospitalId,
+            method: 'GET',
+            success: function(data) {
+                $('#hospitalNameDetail').text(data.nama_rumah_sakit);
+                $('#hospitalAddressDetail').text(data.alamat);
+                $('#hospitalEmailDetail').text(data.email);
+                $('#hospitalPhoneDetail').text(data.telepon);
+                $('#viewHospitalModal').modal('show');
+            },
+            error: function(xhr) {
+                console.log('Error fetching hospital data:', xhr.responseText);
+            }
+        });
+    });
+
+    $('.dropdown-item.edit-hospital').on('click', function() {
+        var hospitalId = $(this).data('id');
+        $.ajax({
+            url: '/hospitals/' + hospitalId,
+            method: 'GET',
+            success: function(data) {
+                $('#hospitalIdEdit').val(data.id);
+                $('#hospitalNameEdit').val(data.nama_rumah_sakit);
+                $('#hospitalAddressEdit').val(data.alamat);
+                $('#hospitalEmailEdit').val(data.email);
+                $('#hospitalPhoneEdit').val(data.telepon);
+                $('#editHospitalModal').modal('show');
+            },
+            error: function(xhr) {
+                console.log('Error fetching hospital data:', xhr.responseText);
+            }
+        });
+    });
+
+    $('#editHospitalForm').on('submit', function(e) {
+        e.preventDefault();
+        var hospitalId = $('#hospitalIdEdit').val();
+        var formData = $(this).serialize();
+        $.ajax({
+            url: '/hospitals/' + hospitalId,
+            method: 'PUT',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    $('#editHospitalModal').modal('hide');
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();
+                        }
+                    });
+                } else {
+                    Swal.fire('Error!', response.message, 'error');
+                }
+            },
+            error: function(xhr) {
+                console.log('Error updating hospital:', xhr.responseText);
+                Swal.fire('Error!', 'An error occurred while updating the hospital: ' + xhr.responseText, 'error');
+            }
+        });
+    });
+
+  // Updated delete confirmation using default alert
+$('.dropdown-item.delete-hospital').on('click', function() {
+    var hospitalId = $(this).data('id');
+    if (confirm('Are you sure you want to delete this hospital? You won\'t be able to revert this!')) {
+        $.ajax({
+            url: '/hospitals/' + hospitalId,
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                // Show success alert
+                alert('Hospital deleted successfully.');
+                // Reload the page
+                location.reload();
+            },
+            error: function(xhr) {
+                console.log('Error deleting hospital:', xhr.responseText);
+                // Handle error (optional alert)
+                alert('An error occurred while deleting the hospital. Please try again.');
+            }
+        });
+    }
+});
+});
+</script>
 @endpush
+

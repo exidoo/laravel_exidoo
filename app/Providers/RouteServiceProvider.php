@@ -26,6 +26,11 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
+        // Add redirect for root URL to login
+        Route::get('/', function () {
+            return redirect()->route('auth.login.page'); // Ensure this route exists
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

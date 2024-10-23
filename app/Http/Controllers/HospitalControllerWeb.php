@@ -24,28 +24,21 @@ class HospitalControllerWeb extends Controller
     // Menyimpan data rumah sakit baru
     public function store(Request $request)
     {
-        // Validasi input
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'nama_rumah_sakit' => 'required|string|max:255',
-            'alamat' => 'required|string',
-            'email' => 'required|email|unique:hospitals,email',
-            'telepon' => 'required|string|max:15',
+            'alamat' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'telepon' => 'required|string|max:20',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+        try {
+            Hospital::create($request->all());
+            return response()->json(['success' => true, 'message' => 'Hospital added successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to add hospital.', 'error' => $e->getMessage()], 500);
         }
-
-        // Menyimpan data ke database
-        Hospital::create([
-            'nama_rumah_sakit' => $request->nama_rumah_sakit,
-            'alamat' => $request->alamat,
-            'email' => $request->email,
-            'telepon' => $request->telepon,
-        ]);
-
-        return redirect()->route('hospitals.index')->with('success', 'Rumah sakit berhasil ditambahkan.');
     }
+
 
     // Menampilkan detail rumah sakit
     public function show($id)
@@ -77,23 +70,32 @@ class HospitalControllerWeb extends Controller
         }
 
         // Mengupdate data di database
-        $hospital = Hospital::findOrFail($id);
-        $hospital->update([
-            'nama_rumah_sakit' => $request->nama_rumah_sakit,
-            'alamat' => $request->alamat,
-            'email' => $request->email,
-            'telepon' => $request->telepon,
-        ]);
+        try {
+            $hospital = Hospital::findOrFail($id);
+            $hospital->update([
+                'nama_rumah_sakit' => $request->nama_rumah_sakit,
+                'alamat' => $request->alamat,
+                'email' => $request->email,
+                'telepon' => $request->telepon,
+            ]);
 
-        return redirect()->route('hospitals.index')->with('success', 'Data rumah sakit berhasil diperbarui.');
+            return redirect()->route('hospitals.index')->with('success', 'Data rumah sakit berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal memperbarui data rumah sakit: ' . $e->getMessage());
+        }
     }
 
-    // Menghapus rumah sakit
     public function destroy($id)
     {
-        $hospital = Hospital::findOrFail($id);
+        $hospital = Hospital::find($id);
+
+        if (!$hospital) {
+            return response()->json(['success' => false, 'message' => 'Hospital not found.'], 404);
+        }
+
         $hospital->delete();
 
-        return redirect()->route('hospitals.index')->with('success', 'Rumah sakit berhasil dihapus.');
+        return response()->json(['success' => true, 'message' => 'Hospital deleted successfully.']);
     }
+
 }
