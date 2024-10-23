@@ -13,7 +13,8 @@ class PatientControllerWeb extends Controller
     public function index()
     {
         $patients = Patient::with('hospital')->get();
-        return view('patient.index', compact('patients')); // Pastikan view 'patient.index' tersedia
+        $hospitals = Hospital::all();
+        return view('patient.index', compact('patients', 'hospitals'));
     }
 
     // Menampilkan form untuk menambah pasien baru

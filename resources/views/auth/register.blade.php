@@ -46,11 +46,11 @@
                 @csrf
                 <div class="mb-3">
                   <label for="name" class="form-label">Nama</label>
-                  <input type="text" class="form-control" id="name" name="name" placeholder="Masukkan Nama" autofocus required />
+                  <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" placeholder="Masukkan Nama" autofocus required />
                 </div>
                 <div class="mb-3">
                   <label for="username" class="form-label">Username</label>
-                  <input type="text" class="form-control" id="username" name="username" placeholder="Masukkan Username" required />
+                  <input type="text" class="form-control" id="username" name="username" value="{{ old('username') }}" placeholder="Masukkan Username" required />
                 </div>
                 <div class="mb-3 form-password-toggle">
                   <label class="form-label" for="password">Password</label>

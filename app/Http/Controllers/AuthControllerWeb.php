@@ -32,7 +32,7 @@ class AuthControllerWeb extends Controller
         // Coba autentikasi user berdasarkan username dan password
         if (Auth::attempt($credentials)) {
             // Jika berhasil login, arahkan ke halaman utama
-            return redirect()->intended('/');
+            return redirect()->intended('/hospitals');
         }
 
         // Jika login gagal, kembali ke halaman login dengan pesan error
@@ -54,15 +54,19 @@ class AuthControllerWeb extends Controller
     public function register(Request $request)
     {
         $request->validate([
+            'name' => 'required|string|max:255', // Add validation for the name field
             'username' => 'required|string|unique:users',
             'password' => 'required|string|min:8',
+            'password_confirmation' => 'required|string|same:password',
         ]);
 
         $user = new User();
+        $user->name = $request->input('name'); // Assign the name field
         $user->username = $request->input('username');
         $user->password = bcrypt($request->input('password'));
         $user->save();
 
         return redirect('/login');
     }
+
 }

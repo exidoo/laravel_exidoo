@@ -48,10 +48,10 @@
 </div>
 
 <!-- Modal for Adding New Hospital -->
-<div class="modal fade" id="addHospitalModal" tabindex="-1" aria-labelledby="addHospitalModalLabel" aria-hidden="true">
+<div class="modal fade" id="addHospitalModal" tabindex="-1" aria-labelledby="addHospitalModalLabel" aria-hidden="true" >
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="addHospitalForm">
+            <form id="addHospitalsForm">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addHospitalModalLabel">Add New Hospital</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -84,7 +84,7 @@
 </div>
 
 <!-- Edit Modal -->
-<div class="modal fade" id="editHospitalModal" tabindex="-1" aria-labelledby="editHospitalModalLabel" aria-hidden="true">
+<div class="modal fade" id="editHospitalModal" tabindex="-1" aria-labelledby="editHospitalModalLabel" aria-hidden="true" inert>
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="editHospitalForm">
@@ -138,7 +138,7 @@
                 e.preventDefault();
                 var formData = $(this).serialize();
                 $.ajax({
-                    url: '{{url('/hospital')}}',
+                    url: '{{url('/hospitals')}}',
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -146,17 +146,17 @@
                     data: formData,
                     success: function(response) {
                         if (response.success) {
-                            $('#addHospitalModal').modal('hide');
-                            Swal.fire({
-                                title: 'Success!',
-                                text: 'Hospital added successfully.',
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    location.reload();
-                                }
-                            });
+                        $('#addHospitalsModal').modal('hide');
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Hospital added successfully.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload();
+                            }
+                        });
                         } else {
                             Swal.fire('Error!', 'Failed to add hospital.', 'error');
                         }
@@ -171,7 +171,7 @@
             $('.dropdown-item.edit-hospital').on('click', function() {
                 var hospitalId = $(this).data('id');
                 $.ajax({
-                    url: `{{url('/hospital/${hospitalId}')}}`,
+                    url: `{{url('/hospitals/${hospitalId}')}}`,
                     method: 'GET',
                     success: function(data) {
                         $('#hospitalIdEdit').val(data.id);
@@ -192,12 +192,12 @@
                 var hospitalId = $('#hospitalIdEdit').val();
                 var formData = $(this).serialize();
                 $.ajax({
-                    url: '/hospital/' + hospitalId,
-                    method: 'PUT',
-                    headers: {
+                    url: '/hospitals/' + hospitalId,
+                    method: 'POST',
+                        headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    data: formData,
+                            },
+                    data: formData + '&_method=PUT',
                     success: function(response) {
                         if (response.success) {
                             $('#editHospitalModal').modal('hide');
@@ -235,11 +235,14 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '/hospital/' + hospitalId,
-                            method: 'DELETE',
+                            url: '/hospitals/' + hospitalId,
+                            method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
+                                },
+                            data: {
+                            _method: 'DELETE'
+                                },
                             success: function(response) {
                                 if (response.success) {
                                     Swal.fire(
