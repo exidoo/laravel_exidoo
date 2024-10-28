@@ -81,9 +81,9 @@ public function show($id)
 }
 
 
-public function filterByHospital($hospitalId)
+public function filterByHospital($hospitalId = null)
 {
-    if ($hospitalId == '') {
+    if (is_null($hospitalId) || $hospitalId == '') {
         // Jika tidak ada filter, ambil semua data pasien
         $patients = Patient::with('hospital')->get();
     } else {

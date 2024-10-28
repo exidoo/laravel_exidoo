@@ -53,7 +53,6 @@
 
         <li class="menu-item @if(url()->current() == url('/hospitals')) active @endif">
           <a href="{{ url('/hospitals') }}" class="menu-link">
-
             <div data-i18n="Hospital">Hospital</div>
           </a>
         </li>

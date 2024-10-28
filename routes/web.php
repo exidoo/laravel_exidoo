@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
     // Rute untuk halaman rumah sakit
     Route::get('/hospitals', [HospitalControllerWeb::class, 'index'])->name('hospitals.index');
     Route::get('/hospitals/{id}', [HospitalControllerWeb::class, 'show']);
-    Route::get('/patients/filter/{hospitalId}', [PatientControllerWeb::class, 'filterByHospital']);
+    Route::get('/patients/filter/{hospitalId?}', [PatientControllerWeb::class, 'filterByHospital']);
 
 
     Route::resource('hospitals', HospitalControllerWeb::class);
