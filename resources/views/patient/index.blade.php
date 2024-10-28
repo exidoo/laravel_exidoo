@@ -275,10 +275,21 @@ $(document).ready(function() {
         });
     });
 
-    // Delete Patient
-    $('.dropdown-item.delete-patient').on('click', function() {
-        var patientId = $(this).data('id');
-        if (confirm('Are you sure you want to delete this patient? You won\'t be able to revert this!')) {
+   // Delete Patient
+$('.dropdown-item.delete-patient').on('click', function() {
+    var patientId = $(this).data('id');
+
+    // SweetAlert for confirmation
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
             $.ajax({
                 url: '/patients/' + patientId,
                 method: 'DELETE',
@@ -286,16 +297,23 @@ $(document).ready(function() {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 success: function(response) {
-                    alert('Patient deleted successfully.');
-                    location.reload();
+                    Swal.fire(
+                        'Deleted!',
+                        'Patient has been deleted successfully.',
+                        'success'
+                    ).then(() => {
+                        location.reload();
+                    });
                 },
                 error: function(xhr) {
                     console.log('Error deleting patient:', xhr.responseText);
-                    alert('An error occurred while deleting the patient. Please try again.');
+                    Swal.fire('Error!', 'An error occurred while deleting the patient. Please try again.', 'error');
                 }
             });
         }
     });
+});
+
 
 
     $(document).ready(function() {
