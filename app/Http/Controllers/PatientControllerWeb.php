@@ -17,6 +17,7 @@ class PatientControllerWeb extends Controller
         return view('patient.index', compact('patients', 'hospitals')); // Pastikan view tersedia
     }
 
+
     // Menampilkan form untuk menambah pasien baru
     public function create()
     {

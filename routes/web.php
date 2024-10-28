@@ -41,6 +41,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/patients/filter/{hospitalId?}', [PatientControllerWeb::class, 'filterByHospital']);
 
 
+
+
     Route::resource('hospitals', HospitalControllerWeb::class);
     Route::resource('patients', PatientControllerWeb::class);
 });

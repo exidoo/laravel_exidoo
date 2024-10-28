@@ -15,6 +15,7 @@ class HospitalControllerWeb extends Controller
         return view('hospital.index', compact('hospitals')); // Pastikan view 'hospital.index' tersedia
     }
 
+
     // Menampilkan form untuk membuat rumah sakit baru
     public function create()
     {

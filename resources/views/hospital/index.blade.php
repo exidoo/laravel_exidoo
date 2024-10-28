@@ -266,29 +266,42 @@ $(document).ready(function() {
     });
 
   // Updated delete confirmation using default alert
-$('.dropdown-item.delete-hospital').on('click', function() {
-    var hospitalId = $(this).data('id');
-    if (confirm('Are you sure you want to delete this hospital? You won\'t be able to revert this!')) {
-        $.ajax({
-            url: '/hospitals/' + hospitalId,
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                // Show success alert
-                alert('Hospital deleted successfully.');
-                // Reload the page
-                location.reload();
-            },
-            error: function(xhr) {
-                console.log('Error deleting hospital:', xhr.responseText);
-                // Handle error (optional alert)
-                alert('An error occurred while deleting the hospital. Please try again.');
+  $('.dropdown-item.delete-hospital').on('click', function() {
+        var hospitalId = $(this).data('id');
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/hospitals/' + hospitalId,
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        Swal.fire(
+                            'Deleted!',
+                            'Hospital has been deleted.',
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function(xhr) {
+                        console.log('Error deleting hospital:', xhr.responseText);
+                        Swal.fire('Error!', 'An error occurred while deleting the hospital. Please try again.', 'error');
+                    }
+                });
             }
         });
-    }
-});
+    });
+
 });
 </script>
 @endpush
