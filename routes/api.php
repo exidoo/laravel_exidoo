@@ -17,16 +17,16 @@ use App\Http\Controllers\API\PatientController;
 |--------------------------------------------------------------------------|
 */
 
-// Route::prefix('v1')->group(function () {
-//     Route::prefix('auth')->group(function () {
-//         Route::post('register', [AuthController::class, 'register']);
-//         Route::post('login', [AuthController::class, 'login']);
-//         Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:jwt');
-//     });
+Route::prefix('v1')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::post('register', [AuthController::class, 'register']);
+        Route::post('login', [AuthController::class, 'login']);
+        Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:jwt');
+    });
 
-//     // Routes untuk Hospital
-//     Route::middleware('auth:api')->group(function () {
-//         Route::apiResource('hospitals', HospitalController::class);
-//         Route::apiResource('patients', PatientController::class);
-//     });
-// });
+    // Routes untuk Hospital
+    Route::middleware('auth:api')->group(function () {
+        Route::apiResource('hospitals', HospitalController::class);
+        Route::apiResource('patients', PatientController::class);
+    });
+});
